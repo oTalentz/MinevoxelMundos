@@ -154,53 +154,65 @@ public class GUIHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getWhoClicked() instanceof Player) {
-            Player player = (Player) event.getWhoClicked();
-            UUID playerUuid = player.getUniqueId();
+        if (!(event.getWhoClicked() instanceof Player)) {
+            return;
+        }
 
-            // Verificar se o jogador tem uma GUI de confirmação de exclusão aberta
-            if (deleteConfirmGuis.containsKey(playerUuid)) {
-                DeleteConfirmData data = deleteConfirmGuis.get(playerUuid);
-                if (event.getInventory().equals(data.getInventory())) {
-                    event.setCancelled(true);
-                    handleDeleteConfirmClick(event, player, data);
-                    return;
-                }
+        Player player = (Player) event.getWhoClicked();
+        UUID playerUuid = player.getUniqueId();
+
+        // Sempre cancelar cliques em GUIs para prevenir movimentação de itens
+        if (playerGuis.containsKey(playerUuid) || deleteConfirmGuis.containsKey(playerUuid) ||
+                permissionGuis.containsKey(playerUuid) || anvilGuis.containsKey(playerUuid)) {
+            event.setCancelled(true);
+        }
+
+        // Verificar se o jogador tem uma GUI de confirmação de exclusão aberta
+        if (deleteConfirmGuis.containsKey(playerUuid)) {
+            DeleteConfirmData data = deleteConfirmGuis.get(playerUuid);
+            if (event.getInventory().equals(data.getInventory())) {
+                handleDeleteConfirmClick(event, player, data);
+                return;
             }
+        }
 
-            // Verificar se o jogador tem uma GUI de seleção de permissão aberta
-            if (permissionGuis.containsKey(playerUuid)) {
-                PermissionSelectionData data = permissionGuis.get(playerUuid);
-                if (event.getInventory().equals(data.getInventory())) {
-                    event.setCancelled(true);
-                    handlePermissionSelectionClick(event, player, data);
-                    return;
-                }
+        // Verificar se o jogador tem uma GUI de seleção de permissão aberta
+        if (permissionGuis.containsKey(playerUuid)) {
+            PermissionSelectionData data = permissionGuis.get(playerUuid);
+            if (event.getInventory().equals(data.getInventory())) {
+                handlePermissionSelectionClick(event, player, data);
+                return;
             }
+        }
 
-            // Verificar se o jogador tem uma GUI aberta
-            if (playerGuis.containsKey(playerUuid)) {
-                Object gui = playerGuis.get(playerUuid);
+        // Verificar se o clique ocorreu dentro do inventário superior e em um slot válido
+        int slot = event.getRawSlot();
+        if (slot < 0 || slot >= event.getView().getTopInventory().getSize()) {
+            return; // Ignora cliques fora do inventário GUI ou no inventário do jogador
+        }
 
-                // Encaminhar o evento para a GUI correta
-                if (gui instanceof MainWorldGUI) {
-                    ((MainWorldGUI) gui).handleClick(event);
-                } else if (gui instanceof WorldCreationGUI) {
-                    ((WorldCreationGUI) gui).handleClick(event);
-                } else if (gui instanceof WorldListGUI) {
-                    ((WorldListGUI) gui).handleClick(event);
-                } else if (gui instanceof WorldEditGUI) {
-                    ((WorldEditGUI) gui).handleClick(event);
-                } else if (gui instanceof WorldPermissionsGUI) {
-                    ((WorldPermissionsGUI) gui).handleClick(event);
-                }
+        // Verificar se o jogador tem uma GUI aberta
+        if (playerGuis.containsKey(playerUuid)) {
+            Object gui = playerGuis.get(playerUuid);
+
+            // Encaminhar o evento para a GUI correta
+            if (gui instanceof MainWorldGUI) {
+                ((MainWorldGUI) gui).handleClick(event);
+            } else if (gui instanceof WorldCreationGUI) {
+                ((WorldCreationGUI) gui).handleClick(event);
+            } else if (gui instanceof WorldListGUI) {
+                ((WorldListGUI) gui).handleClick(event);
+            } else if (gui instanceof WorldEditGUI) {
+                ((WorldEditGUI) gui).handleClick(event);
+            } else if (gui instanceof WorldPermissionsGUI) {
+                ((WorldPermissionsGUI) gui).handleClick(event);
             }
+        }
 
-            // Verificar se o jogador tem uma GUI de Anvil aberta
-            if (anvilGuis.containsKey(playerUuid)) {
-                AnvilGUI anvilGUI = anvilGuis.get(playerUuid);
-                anvilGUI.handleClick(event);
-            }
+        // Verificar se o jogador tem uma GUI de Anvil aberta
+        if (anvilGuis.containsKey(playerUuid)) {
+            AnvilGUI anvilGUI = anvilGuis.get(playerUuid);
+            anvilGUI.handleClick(event);
         }
     }
 
@@ -405,6 +417,11 @@ public class GUIHandler implements Listener {
             }
             return false;
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(inventory, worldData.getId());
+        }
     }
 
     private static class PermissionSelectionData {
@@ -445,6 +462,11 @@ public class GUIHandler implements Listener {
                         this.worldData.getId() == other.worldData.getId();
             }
             return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(inventory, targetUUID, worldData.getId());
         }
     }
 

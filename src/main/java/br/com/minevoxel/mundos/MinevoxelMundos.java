@@ -1,18 +1,20 @@
 package br.com.minevoxel.mundos;
 
+import br.com.minevoxel.mundos.commands.CommandHandler;
 import br.com.minevoxel.mundos.config.Config;
 import br.com.minevoxel.mundos.config.Messages;
 import br.com.minevoxel.mundos.database.DatabaseManager;
 import br.com.minevoxel.mundos.events.PlayerEvents;
 import br.com.minevoxel.mundos.events.WorldEvents;
 import br.com.minevoxel.mundos.gui.GUIHandler;
+import br.com.minevoxel.mundos.managers.MultiverseWorldManager;
 import br.com.minevoxel.mundos.managers.PlayerManager;
 import br.com.minevoxel.mundos.managers.ServerManager;
 import br.com.minevoxel.mundos.managers.TeleportManager;
-import br.com.minevoxel.mundos.managers.WorldManager;
 import br.com.minevoxel.mundos.velocity.MessageChannels;
 import br.com.minevoxel.mundos.velocity.ServerConnector;
 import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MinevoxelMundos extends JavaPlugin {
@@ -21,7 +23,7 @@ public class MinevoxelMundos extends JavaPlugin {
     private Config config;
     private Messages messages;
     private DatabaseManager databaseManager;
-    private WorldManager worldManager;
+    private MultiverseWorldManager worldManager;
     private PlayerManager playerManager;
     private ServerManager serverManager;
     private TeleportManager teleportManager;
@@ -29,10 +31,19 @@ public class MinevoxelMundos extends JavaPlugin {
     private ServerConnector serverConnector;
     private MessageChannels messageChannels;
     private String serverType; // "LOBBY" ou "WORLDS"
+    private CommandHandler commandHandler;
 
     @Override
     public void onEnable() {
         instance = this;
+
+        // Verificar dependência do Multiverse-Core
+        if (Bukkit.getPluginManager().getPlugin("Multiverse-Core") == null) {
+            getLogger().severe("Multiverse-Core não encontrado! Este plugin requer Multiverse-Core para funcionar.");
+            getLogger().severe("Desativando o plugin...");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
 
         // Carregar configurações
         loadConfigs();
@@ -52,6 +63,9 @@ public class MinevoxelMundos extends JavaPlugin {
 
         // Configurar conexão com o Velocity
         setupVelocityConnection();
+
+        // Registrar comandos
+        registerCommands();
 
         getLogger().info("MinevoxelMundos ativado com sucesso! Rodando como: " + serverType);
     }
@@ -100,12 +114,14 @@ public class MinevoxelMundos extends JavaPlugin {
 
         // Inicializar gerenciadores específicos do tipo de servidor
         if (serverType.equals("WORLDS")) {
-            worldManager = new WorldManager(this);
+            // Usar MultiverseWorldManager em vez de WorldManager
+            worldManager = new MultiverseWorldManager(this);
             worldManager.initialize();
         }
 
         // Inicializar gerenciador de GUI (comum para ambos os tipos de servidor)
         guiHandler = new GUIHandler(this);
+        guiHandler.registerEvents(); // Registrar eventos após a inicialização completa
     }
 
     private void registerEvents() {
@@ -131,6 +147,17 @@ public class MinevoxelMundos extends JavaPlugin {
         getServer().getMessenger().registerIncomingPluginChannel(this, "minevoxel:mundos", messageChannels);
     }
 
+    private void registerCommands() {
+        // Inicializar e registrar o manipulador de comandos
+        commandHandler = new CommandHandler(this);
+
+        PluginCommand mundoCommand = getCommand("mundo");
+        if (mundoCommand != null) {
+            mundoCommand.setExecutor(commandHandler);
+            mundoCommand.setTabCompleter(commandHandler);
+        }
+    }
+
     // Getters
     public static MinevoxelMundos getInstance() {
         return instance;
@@ -148,7 +175,7 @@ public class MinevoxelMundos extends JavaPlugin {
         return databaseManager;
     }
 
-    public WorldManager getWorldManager() {
+    public MultiverseWorldManager getWorldManager() {
         return worldManager;
     }
 

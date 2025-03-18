@@ -400,7 +400,9 @@ public class DatabaseManager {
 
     private void saveWorldPermissions(Connection conn, WorldData worldData) throws SQLException {
         try (PreparedStatement stmt = conn.prepareStatement(
-                "INSERT INTO minevoxel_world_permissions (world_id, player_uuid, permission) VALUES (?, ?, ?)")) {
+                "INSERT INTO minevoxel_world_permissions (world_id, player_uuid, permission) " +
+                        "VALUES (?, ?, ?) " +
+                        "ON DUPLICATE KEY UPDATE permission = VALUES(permission)")) {
 
             for (Map.Entry<UUID, String> entry : worldData.getPlayerPermissions().entrySet()) {
                 stmt.setInt(1, worldData.getId());

@@ -61,11 +61,21 @@ public class WorldListGUI {
     }
 
     private void createInventory() {
-        String title = switch (listType) {
-            case MY_WORLDS -> "§8Meus Mundos";
-            case ACCESSIBLE_WORLDS -> "§8Mundos Acessíveis";
-            case ALL_WORLDS -> "§8Todos os Mundos";
-        };
+        String title;
+        switch (listType) {
+            case MY_WORLDS:
+                title = "§8Meus Mundos";
+                break;
+            case ACCESSIBLE_WORLDS:
+                title = "§8Mundos Acessíveis";
+                break;
+            case ALL_WORLDS:
+                title = "§8Todos os Mundos";
+                break;
+            default:
+                title = "§8Mundos";
+                break;
+        }
 
         inventory = Bukkit.createInventory(null, 54, title);
     }
@@ -189,12 +199,22 @@ public class WorldListGUI {
 
             // Identificar o tipo de permissão do jogador
             String permission = world.getPlayerPermissions().getOrDefault(player.getUniqueId(), "VISITOR");
-            String permissionDisplay = switch (permission) {
-                case "OWNER" -> "§a§lPROPRIETÁRIO";
-                case "BUILDER" -> "§e§lCONSTRUTOR";
-                case "VISITOR" -> "§7§lVISITANTE";
-                default -> "§7§lVISITANTE";
-            };
+            String permissionDisplay;
+
+            switch (permission) {
+                case "OWNER":
+                    permissionDisplay = "§a§lPROPRIETÁRIO";
+                    break;
+                case "BUILDER":
+                    permissionDisplay = "§e§lCONSTRUTOR";
+                    break;
+                case "VISITOR":
+                    permissionDisplay = "§7§lVISITANTE";
+                    break;
+                default:
+                    permissionDisplay = "§7§lVISITANTE";
+                    break;
+            }
 
             // Status do mundo (carregado, etc.)
             boolean isLoaded = plugin.isWorldsServer() &&
@@ -231,31 +251,41 @@ public class WorldListGUI {
     }
 
     private String formatWorldType(String worldType) {
-        return switch (worldType) {
-            case "NORMAL" -> "Normal";
-            case "FLAT" -> "Plano";
-            case "AMPLIFIED" -> "Amplificado";
-            default -> worldType;
-        };
+        if ("NORMAL".equals(worldType)) {
+            return "Normal";
+        } else if ("FLAT".equals(worldType)) {
+            return "Plano";
+        } else if ("AMPLIFIED".equals(worldType)) {
+            return "Amplificado";
+        } else {
+            return worldType;
+        }
     }
 
     private String formatEnvironment(String environment) {
-        return switch (environment) {
-            case "NORMAL" -> "Mundo Normal";
-            case "NETHER" -> "Nether";
-            case "THE_END" -> "End";
-            default -> environment;
-        };
+        if ("NORMAL".equals(environment)) {
+            return "Mundo Normal";
+        } else if ("NETHER".equals(environment)) {
+            return "Nether";
+        } else if ("THE_END".equals(environment)) {
+            return "End";
+        } else {
+            return environment;
+        }
     }
 
     private String formatGameMode(GameMode gameMode) {
-        return switch (gameMode) {
-            case SURVIVAL -> "Sobrevivência";
-            case CREATIVE -> "Criativo";
-            case ADVENTURE -> "Aventura";
-            case SPECTATOR -> "Espectador";
-            default -> gameMode.name();
-        };
+        if (gameMode == GameMode.SURVIVAL) {
+            return "Sobrevivência";
+        } else if (gameMode == GameMode.CREATIVE) {
+            return "Criativo";
+        } else if (gameMode == GameMode.ADVENTURE) {
+            return "Aventura";
+        } else if (gameMode == GameMode.SPECTATOR) {
+            return "Espectador";
+        } else {
+            return gameMode.name();
+        }
     }
 
     private void addNavigationButtons() {
@@ -325,11 +355,15 @@ public class WorldListGUI {
     }
 
     private String formatListType(ListType type) {
-        return switch (type) {
-            case MY_WORLDS -> "Meus Mundos";
-            case ACCESSIBLE_WORLDS -> "Mundos Acessíveis";
-            case ALL_WORLDS -> "Todos os Mundos";
-        };
+        if (type == ListType.MY_WORLDS) {
+            return "Meus Mundos";
+        } else if (type == ListType.ACCESSIBLE_WORLDS) {
+            return "Mundos Acessíveis";
+        } else if (type == ListType.ALL_WORLDS) {
+            return "Todos os Mundos";
+        } else {
+            return "Desconhecido";
+        }
     }
 
     private void fillEmptySlots() {
@@ -351,13 +385,19 @@ public class WorldListGUI {
     }
 
     public void handleClick(InventoryClickEvent event) {
+        // Sempre cancela eventos de clique no inventário GUI
+        event.setCancelled(true);
+
         int slot = event.getRawSlot();
 
+        // Apenas processar cliques dentro do inventário superior (slots válidos)
         if (slot >= 0 && slot < inventory.getSize()) {
-            event.setCancelled(true);
-
-            // Verificar se é um slot de mundo
-            if (worldSlots.containsKey(slot)) {
+            // Verificar se o slot tem uma ação atribuída
+            if (actionSlots.containsKey(slot)) {
+                actionSlots.get(slot).run();
+            }
+            // Verificar se o slot tem um mundo atribuído
+            else if (worldSlots.containsKey(slot)) {
                 WorldData world = worldSlots.get(slot);
 
                 if (event.isRightClick()) {
@@ -367,13 +407,8 @@ public class WorldListGUI {
                     // Teleportar para o mundo
                     teleportToWorld(world);
                 }
-                return;
             }
-
-            // Verificar se é um slot de ação
-            if (actionSlots.containsKey(slot)) {
-                actionSlots.get(slot).run();
-            }
+            // Se não é nem ação nem mundo, não faz nada (ignora cliques em slots vazios)
         }
     }
 
@@ -423,28 +458,34 @@ public class WorldListGUI {
 
     private void toggleListType() {
         // Alternar entre os tipos de lista
-        switch (listType) {
-            case MY_WORLDS:
-                listType = ListType.ACCESSIBLE_WORLDS;
-                break;
-            case ACCESSIBLE_WORLDS:
-                if (player.hasPermission("minevoxel.admin")) {
-                    listType = ListType.ALL_WORLDS;
-                } else {
-                    listType = ListType.MY_WORLDS;
-                }
-                break;
-            case ALL_WORLDS:
+        if (listType == ListType.MY_WORLDS) {
+            listType = ListType.ACCESSIBLE_WORLDS;
+        } else if (listType == ListType.ACCESSIBLE_WORLDS) {
+            if (player.hasPermission("minevoxel.admin")) {
+                listType = ListType.ALL_WORLDS;
+            } else {
                 listType = ListType.MY_WORLDS;
-                break;
+            }
+        } else if (listType == ListType.ALL_WORLDS) {
+            listType = ListType.MY_WORLDS;
         }
 
         // Atualizar título do inventário
-        String title = switch (listType) {
-            case MY_WORLDS -> "§8Meus Mundos";
-            case ACCESSIBLE_WORLDS -> "§8Mundos Acessíveis";
-            case ALL_WORLDS -> "§8Todos os Mundos";
-        };
+        String title;
+        switch (listType) {
+            case MY_WORLDS:
+                title = "§8Meus Mundos";
+                break;
+            case ACCESSIBLE_WORLDS:
+                title = "§8Mundos Acessíveis";
+                break;
+            case ALL_WORLDS:
+                title = "§8Todos os Mundos";
+                break;
+            default:
+                title = "§8Mundos";
+                break;
+        }
 
         // É necessário recriar o inventário para atualizar o título
         Inventory newInventory = Bukkit.createInventory(null, 54, title);

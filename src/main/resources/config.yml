@@ -8,7 +8,7 @@ server-type: AUTO
 # Configurações de servidores
 servers:
   lobby: lobby
-  worlds: worlds-1
+  worlds: Worlds-1
 
 # Configurações de mundos
 worlds:

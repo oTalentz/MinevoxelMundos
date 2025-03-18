@@ -5,7 +5,8 @@ api-version: 1.20
 authors: [Minevoxel]
 description: Plugin de gerenciamento de mundos privados para servidores Minecraft
 website: https://minevoxel.com.br
-softdepend: [Multiverse-Core, Vault]
+depend: [Multiverse-Core]
+softdepend: [Vault]
 
 commands:
   mundo:
