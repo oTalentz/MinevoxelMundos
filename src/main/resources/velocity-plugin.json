@@ -1,0 +1,9 @@
+{
+  "id": "minevoxel-mundos",
+  "name": "MinevoxelMundos",
+  "version": "1.0.0",
+  "description": "Plugin de gerenciamento de mundos privados para servidores Minecraft",
+  "authors": ["Minevoxel"],
+  "main": "br.com.minevoxel.mundos.velocity.VelocityPlugin",
+  "dependencies": []
+}

@@ -1,0 +1,87 @@
+# Configurações do Plugin MinevoxelMundos
+# Versão 1.0.0
+
+# Tipo de servidor (AUTO, LOBBY, WORLDS)
+# AUTO tenta detectar automaticamente com base no nome do servidor
+server-type: AUTO
+
+# Configurações de servidores
+servers:
+  lobby: lobby
+  worlds: worlds-1
+
+# Configurações de mundos
+worlds:
+  # Carregar mundos automaticamente ao iniciar o servidor
+  auto-load: false
+
+  # Número máximo de mundos por jogador (0 = ilimitado)
+  max-per-player: 5
+
+  # Tempo em minutos antes de descarregar mundos inativos
+  unload-delay: 30
+
+  # Limite padrão de slots para jogadores em mundos privados
+  default-slot-limit: 10
+
+  # Se os mundos são públicos por padrão
+  public-by-default: false
+
+  # Permitir alteração de nome de mundo
+  allow-name-change: true
+
+  # Permitir alteração de tipo de mundo após criação
+  allow-type-change: false
+
+  # Permitir alteração de modo de jogo
+  allow-gamemode-change: true
+
+  # Comandos desabilitados em mundos privados
+  disabled-commands:
+    - op
+    - deop
+    - stop
+    - restart
+    - reload
+    - kill
+    - ban
+    - kick
+    - worldedit
+
+# Configurações de banco de dados
+database:
+  host: glacier.lowping.host
+  port: 3306
+  database: s39_MinevoxelMundos
+  username: u39_5gSLkk4k41
+  password: whgx+v2PEkk=Put^2^muN+zF
+  useSSL: false
+  autoReconnect: true
+
+# Integração com economia (Vault)
+economy:
+  enabled: false
+  world-creation-cost: 100.0
+
+# Permissões personalizadas
+permissions:
+  create-world: minevoxel.mundo.criar
+  bypass-limit: minevoxel.mundo.admin.bypass-limit
+  admin: minevoxel.mundo.admin
+
+# Configurações avançadas
+advanced:
+  # Usar LuckPerms para controle de permissão
+  use-luckperms: false
+
+  # Manter mundos em cache mesmo quando não utilizados
+  keep-worlds-cached: true
+
+  # Tempo máximo em segundos para aguardar carregamento de mundo
+  world-load-timeout: 60
+
+  # Compactação de mundo ao descarregar
+  compress-worlds: false
+
+  # Nível de debug (0 = desativado, 1 = básico, 2 = completo)
+  debug-level: 0

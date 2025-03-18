@@ -1,0 +1,58 @@
+name: MinevoxelMundos
+version: 1.0.0
+main: br.com.minevoxel.mundos.MinevoxelMundos
+api-version: 1.20
+authors: [Minevoxel]
+description: Plugin de gerenciamento de mundos privados para servidores Minecraft
+website: https://minevoxel.com.br
+softdepend: [Multiverse-Core, Vault]
+
+commands:
+  mundo:
+    description: Comando principal para gerenciar mundos
+    usage: /mundo [criar|listar|carregar|descarregar|ir|info|config|remover]
+    aliases: [world, worlds, mundos]
+
+permissions:
+  minevoxel.mundo.*:
+    description: Acesso completo a todos os comandos de mundos
+    children:
+      minevoxel.mundo.criar: true
+      minevoxel.mundo.listar: true
+      minevoxel.mundo.ir: true
+      minevoxel.mundo.info: true
+      minevoxel.mundo.config: true
+      minevoxel.mundo.remover: true
+      minevoxel.mundo.admin: true
+
+  minevoxel.mundo.criar:
+    description: Permite criar mundos
+    default: true
+
+  minevoxel.mundo.listar:
+    description: Permite listar mundos
+    default: true
+
+  minevoxel.mundo.ir:
+    description: Permite teleportar para mundos
+    default: true
+
+  minevoxel.mundo.info:
+    description: Permite ver informações de mundos
+    default: true
+
+  minevoxel.mundo.config:
+    description: Permite configurar mundos
+    default: true
+
+  minevoxel.mundo.remover:
+    description: Permite remover mundos
+    default: true
+
+  minevoxel.mundo.admin:
+    description: Permissões administrativas para mundos
+    default: op
+    children:
+      minevoxel.mundo.admin.carregar: true
+      minevoxel.mundo.admin.descarregar: true
+      minevoxel.mundo.admin.editar: true

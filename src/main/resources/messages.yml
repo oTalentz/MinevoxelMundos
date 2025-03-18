@@ -1,0 +1,59 @@
+# Mensagens do Plugin MinevoxelMundos
+# Versão 1.0.0
+
+prefix: "&a[MinevoxelMundos] &r"
+
+general:
+  no-permission: "&cVocê não tem permissão para usar este comando!"
+  player-only: "&cEste comando só pode ser executado por jogadores!"
+  world-not-found: "&cMundo não encontrado: &f{0}"
+  world-already-exists: "&cJá existe um mundo com este nome: &f{0}"
+  invalid-world-name: "&cNome de mundo inválido! Use apenas letras, números e underscores."
+  world-limit-reached: "&cVocê atingiu o limite de mundos ({0})! Delete um mundo para poder criar mais."
+  teleporting: "&aTeleportando para &b{0}&a..."
+  connecting: "&aConectando ao servidor de mundos..."
+  error-occurred: "&cOcorreu um erro: &f{0}"
+
+world-creation:
+  creating-world: "&aCriando mundo &b{0}&a..."
+  world-created: "&aMundo &b{0}&a criado com sucesso!"
+  creation-failed: "&cFalha ao criar o mundo: &f{0}"
+  teleporting-to-new-world: "&aTeleportando para o novo mundo..."
+  generating-world: "&aGerando terreno para o mundo &b{0}&a... Isto pode levar algum tempo."
+
+world-management:
+  world-loaded: "&aMundo &b{0}&a carregado com sucesso!"
+  world-unloaded: "&aMundo &b{0}&a descarregado com sucesso!"
+  world-deleted: "&aMundo &b{0}&a excluído com sucesso!"
+  world-not-loaded: "&cO mundo &f{0}&c não está carregado!"
+  world-is-loaded: "&cO mundo &f{0}&c já está carregado!"
+  world-info: |-
+    &a=== Informações do Mundo &b{0}&a ===
+    &7ID: &f{1}
+    &7Proprietário: &f{2}
+    &7Criado em: &f{3}
+    &7Último acesso: &f{4}
+    &7Tipo: &f{5}
+    &7Ambiente: &f{6}
+    &7Modo de jogo: &f{7}
+    &7Status: {8}
+  world-list-header: "&a=== Seus Mundos ({0}/{1}) ==="
+  world-list-item: "&a- &b{0} &7({1}) &a[{2}]"
+  world-list-empty: "&7Você não possui mundos. Use /mundo criar para criar seu primeiro mundo!"
+  world-access-denied: "&cVocê não tem permissão para acessar o mundo &f{0}&c!"
+  world-build-denied: "&cVocê não tem permissão para construir no mundo &f{0}&c!"
+
+world-settings:
+  settings-updated: "&aConfigurações do mundo &b{0}&a atualizadas com sucesso!"
+  update-failed: "&cFalha ao atualizar configurações: &f{0}"
+  setting-display-name: "&aDefinindo nome de exibição para: &f{0}"
+  setting-gamemode: "&aDefinindo modo de jogo para: &f{0}"
+  setting-pvp: "&aDefinindo PVP para: &f{0}"
+  setting-public: "&aDefinindo visibilidade pública para: &f{0}"
+  setting-permission: "&aDefinindo permissão de &f{0}&a para &f{1}"
+  removed-permission: "&aRemovida permissão de &f{0}"
+
+permissions:
+  added-player: "&aJogador &f{0}&a adicionado ao mundo com permissão &f{1}&a!"
+  removed-player: "&aJogador &f{0}&a removido do mundo!"
+  changed-permission: "&aPermissão de &f{0}&a alterada para &f{1}&a!"
